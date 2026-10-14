@@ -1,0 +1,31 @@
+# Gera a cobrinha do gráfico de contribuições e publica no branch "output".
+name: snake
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: Platane/snk@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/snake-light.svg?color_snake=#5093FE&color_dots=#ebedf0,#c6dafe,#93bbfd,#5093fe,#1f5fd0
+            dist/snake-dark.svg?palette=github-dark&color_snake=#5093FE&color_dots=#161b22,#16325e,#1f4f9a,#3a7bea,#7fb0ff
+
+      - uses: crazy-max/ghaction-github-pages@v4
+        with:
+          target_branch: output
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
